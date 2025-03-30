@@ -1,4 +1,4 @@
-package Movie_API
+package main
 
 import (
 	"encoding/json"
@@ -89,10 +89,10 @@ func main() {
 	movies = append(movies, Movie{ID: "2", Isbn: "002", Title: "Interstellar", Director: &Director{FirstName: "Christopher", LastName: "Nolan"}})
 
 	r.HandleFunc("/movies", getMovies).Methods("GET")
-	r.HandleFunc("/movies{id}", getMovie).Methods("GET")
+	r.HandleFunc("/movies/{id}", getMovie).Methods("GET")
 	r.HandleFunc("/movies", createMovie).Methods("POST")
-	r.HandleFunc("/movies{id}", updateMovie).Methods("PUT")
-	r.HandleFunc("/movies{id}", deleteMovie).Methods("DELETE")
+	r.HandleFunc("/movies/{id}", updateMovie).Methods("PUT")
+	r.HandleFunc("/movies/{id}", deleteMovie).Methods("DELETE")
 
 	fmt.Println("Movie API is running on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
