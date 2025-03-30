@@ -66,6 +66,22 @@ func createMovie(writer http.ResponseWriter, request *http.Request) {
 	json.NewEncoder(writer).Encode(movie)
 }
 
+func updateMovie(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(request)
+	for index, movie := range movies {
+		if movie.ID == params["id"] {
+			movies = append(movies[:index], movies[index+1:]...)
+			var movie Movie
+			_ = json.NewDecoder(request.Body).Decode(&movie)
+			movie.ID = params["id"]
+			movies = append(movies, movie)
+			json.NewEncoder(writer).Encode(movie)
+		}
+	}
+
+}
+
 func main() {
 	r := mux.NewRouter()
 
@@ -73,10 +89,10 @@ func main() {
 	movies = append(movies, Movie{ID: "2", Isbn: "002", Title: "Interstellar", Director: &Director{FirstName: "Christopher", LastName: "Nolan"}})
 
 	r.HandleFunc("/movies", getMovies).Methods("GET")
-	r.Handle("/movies{id}", getMovie).Methods("GET")
+	r.HandleFunc("/movies{id}", getMovie).Methods("GET")
 	r.HandleFunc("/movies", createMovie).Methods("POST")
-	r.Handle("/movies{id}", updateMovie).Methods("PUT")
-	r.Handle("/movies{id}", deleteMovie).Methods("DELETE")
+	r.HandleFunc("/movies{id}", updateMovie).Methods("PUT")
+	r.HandleFunc("/movies{id}", deleteMovie).Methods("DELETE")
 
 	fmt.Println("Movie API is running on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
